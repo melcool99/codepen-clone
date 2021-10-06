@@ -1,11 +1,13 @@
 import 'bulmaswatch/darkly/bulmaswatch.min.css'
-import CodeCell from './components/CodeCell'
+import '@fortawesome/fontawesome-free/css/all.min.css'
+
+import CellList from './components/CellList'
+
 
 const App = () => {
   return (
     <div>
-      <CodeCell />
-      {/* <CodeCell /> */}
+      <CellList/>
     </div>
   )
 }

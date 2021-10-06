@@ -1,39 +1,57 @@
-import { useState, useEffect } from 'react'
-import { bundle } from '../bundler'
+import { useEffect } from 'react'
+import { Cell } from '../app/interfaces/cell'
 import CodeEditor from './CodeEditor'
 import Preview from './Preview'
+import { bundle } from '../bundler'
 import Resizable from './Resizable'
+import { useAppDispatch, useAppSelector } from '../app/hooks/hooks'
+import { updateCell } from '../app/slices/cellsSlice'
+import { bundleStart, bundleComplete } from '../app/slices/bundlesSlice'
+interface CodeCellProps {
+  cell: Cell
+}
 
-const CodeCell = () => {
-  const [input, setInput] = useState('')
-  const [code, setCode] = useState('')
-  const [error, setError] = useState('')
-
+const CodeCell: React.FC<CodeCellProps> = ({ cell }) => {
+  const dispatch = useAppDispatch()
+  const bundleState = useAppSelector((state) => state.bundles[cell.id])
   useEffect(() => {
     let timer = setTimeout(async () => {
-      const output = await bundle(input)
-      setCode(output.code)
-      setError(output.error)
-    }, 1000);
+      dispatch(bundleStart({ cellId: cell.id }))
+      const result = await bundle(cell.content)
+      dispatch(
+        bundleComplete({
+          cellId: cell.id,
+          bundle: {
+            code: result.code,
+            err: result.error,
+          },
+        })
+      )
+    }, 1000)
     return () => {
       clearTimeout(timer)
     }
-  }, [input])
+  }, [cell.content, cell.id, dispatch])
 
   return (
     <Resizable direction='vertical'>
-      <div style={{height:'100%', display:'flex', flexDirection:'row'}}>
-        <Resizable
-          direction='horizontal'
-        >
-        <CodeEditor
-          initialValue={''}
-          onChange={(value) => {
-            setInput(value)
-          }}
-        />
+      <div
+        style={{
+          height: 'calc(100% - 10px)',
+          display: 'flex',
+          flexDirection: 'row',
+        }}>
+        <Resizable direction='horizontal'>
+          <CodeEditor
+            initialValue={cell.content}
+            onChange={(value: string) =>
+              dispatch(updateCell({ id: cell.id, content: value }))
+            }
+          />
         </Resizable>
-        <Preview code={code} error={error}/>
+        {bundleState && (
+          <Preview code={bundleState.code} error={bundleState.err} />
+        )}
       </div>
     </Resizable>
   )
