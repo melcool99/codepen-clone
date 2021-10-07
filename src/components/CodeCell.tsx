@@ -7,6 +7,8 @@ import Resizable from './Resizable'
 import { useAppDispatch, useAppSelector } from '../app/hooks/hooks'
 import { updateCell } from '../app/slices/cellsSlice'
 import { bundleStart, bundleComplete } from '../app/slices/bundlesSlice'
+import './CodeCell.css'
+
 interface CodeCellProps {
   cell: Cell
 }
@@ -14,7 +16,12 @@ interface CodeCellProps {
 const CodeCell: React.FC<CodeCellProps> = ({ cell }) => {
   const dispatch = useAppDispatch()
   const bundleState = useAppSelector((state) => state.bundles[cell.id])
+
   useEffect(() => {
+    if (!bundle) {
+      dispatch(bundleStart({ cellId: cell.id }))
+      return
+    }
     let timer = setTimeout(async () => {
       dispatch(bundleStart({ cellId: cell.id }))
       const result = await bundle(cell.content)
@@ -49,9 +56,17 @@ const CodeCell: React.FC<CodeCellProps> = ({ cell }) => {
             }
           />
         </Resizable>
-        {bundleState && (
-          <Preview code={bundleState.code} error={bundleState.err} />
-        )}
+        <div className='progress-wrapper'>
+          {!bundleState || bundleState.loading ? (
+            <div className='progress-cover'>
+              <progress className='progress is-small is-primary' max='100'>
+                Loading
+              </progress>
+            </div>
+          ) : (
+            <Preview code={bundleState.code} error={bundleState.err} />
+          )}
+        </div>
       </div>
     </Resizable>
   )
