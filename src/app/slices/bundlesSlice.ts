@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { bundle } from '../../bundler'
-import { AppDispatch } from '../store'
+
 interface BundlesState {
   [key: string]:
     | {
