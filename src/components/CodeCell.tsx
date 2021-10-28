@@ -1,12 +1,12 @@
 import { useEffect } from 'react'
-import { Cell } from '../app/interfaces/cell'
+import { Cell } from '../store/interfaces/cell'
 import CodeEditor from './CodeEditor'
 import Preview from './Preview'
 import { bundle } from '../bundler'
 import Resizable from './Resizable'
-import { useAppDispatch, useAppSelector } from '../app/hooks/hooks'
-import { updateCell } from '../app/slices/cellsSlice'
-import { bundleStart, bundleComplete } from '../app/slices/bundlesSlice'
+import { useAppDispatch, useAppSelector } from '../store/hooks/hooks'
+import { updateCell } from '../store/slices/cellsSlice'
+import { bundleStart, bundleComplete } from '../store/slices/bundlesSlice'
 import './CodeCell.css'
 
 interface CodeCellProps {
@@ -16,14 +16,29 @@ interface CodeCellProps {
 const CodeCell: React.FC<CodeCellProps> = ({ cell }) => {
   const dispatch = useAppDispatch()
   const bundleState = useAppSelector((state) => state.bundles[cell.id])
+  const mergedCode = useAppSelector((state) => {
+    const { data, order } = state.cells
+    const orderedCells = order.map((id) => data[id])
+    const cumulativeCode = []
+    for (let c of orderedCells) {
+      if (c.type === 'code') {
+        cumulativeCode.push(c.content)
+      }
+      if (c.id === cell.id) {
+        break
+      }
+    }
+    
+    return cumulativeCode
+  })
 
   useEffect(() => {
     if (!bundle) {
-      dispatch(bundleStart({ cellId: cell.id }))
+      dispatch(bundleStart({ cellId: cell.id, code: mergedCode.join('\n') }))
       return
     }
     let timer = setTimeout(async () => {
-      dispatch(bundleStart({ cellId: cell.id }))
+      dispatch(bundleStart({ cellId: cell.id, code: mergedCode.join('\n') }))
       const result = await bundle(cell.content)
       dispatch(
         bundleComplete({
@@ -34,11 +49,11 @@ const CodeCell: React.FC<CodeCellProps> = ({ cell }) => {
           },
         })
       )
-    }, 1000)
+    }, 750)
     return () => {
       clearTimeout(timer)
     }
-  }, [cell.content, cell.id, dispatch])
+  }, [cell.id, dispatch, cell.content, mergedCode.join('\n')])
 
   return (
     <Resizable direction='vertical'>

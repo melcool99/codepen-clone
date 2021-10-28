@@ -12,6 +12,7 @@ interface BundlesState {
 
 interface BundleStartAction {
   cellId: string
+  code: string
 }
 
 interface BundleCompleteAction {
@@ -29,9 +30,10 @@ const bundlesSlice = createSlice({
   initialState,
   reducers: {
     bundleStart: (state, action: PayloadAction<BundleStartAction>) => {
+
       state[action.payload.cellId] = {
         loading: true,
-        code: '',
+        code:action.payload.code,
         err: '',
       }
     },
@@ -47,4 +49,5 @@ const bundlesSlice = createSlice({
 
 
 export const { bundleStart, bundleComplete } = bundlesSlice.actions
+
 export default bundlesSlice.reducer

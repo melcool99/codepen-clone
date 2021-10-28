@@ -24,13 +24,13 @@ export const bundle = async (rawCode: string) => {
       },
     })
     return {
-      code : result.outputFiles[0].text,
-      error:''
+      code: result.outputFiles[0].text,
+      error: '',
     }
-  } catch (error:any) {
+  } catch (error: any) {
     return {
-      code:'',
-      error: error.message
+      code: '',
+      error: error.message,
     }
   }
 }

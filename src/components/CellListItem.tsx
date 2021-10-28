@@ -1,5 +1,5 @@
 import React from 'react'
-import { Cell } from '../app/interfaces/cell'
+import { Cell } from '../store/interfaces/cell'
 import ActionBar from './ActionBar'
 import CodeCell from './CodeCell'
 import TextEditor from './TextEditor'

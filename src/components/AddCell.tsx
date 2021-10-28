@@ -1,6 +1,6 @@
 import React from 'react'
-import { useAppDispatch } from '../app/hooks/hooks'
-import { insertCellAfter } from '../app/slices/cellsSlice'
+import { useAppDispatch } from '../store/hooks/hooks'
+import { insertCellAfter } from '../store/slices/cellsSlice'
 import './AddCell.css'
 
 interface AddCellProps {

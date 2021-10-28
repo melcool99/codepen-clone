@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react'
 import CellListItem from './CellListItem'
-import { useAppSelector } from '../app/hooks/hooks'
+import { useAppSelector } from '../store/hooks/hooks'
 import AddCell from './AddCell'
 const CellList: React.FC = () => {
   const cells = useAppSelector(({ cells: { order, data } }) =>

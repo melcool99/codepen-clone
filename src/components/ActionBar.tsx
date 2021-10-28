@@ -1,6 +1,6 @@
 import React from 'react'
-import { useAppDispatch } from '../app/hooks/hooks'
-import { deleteCell, moveCell } from '../app/slices/cellsSlice'
+import { useAppDispatch } from '../store/hooks/hooks'
+import { deleteCell, moveCell } from '../store/slices/cellsSlice'
 import './ActionBar.css'
 
 interface ActionBarProps {
